@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Socialify</title>
+        <link rel="stylesheet" href="/css/style.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"></script>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    </head>
+    <body>
+        <header>
+            <nav>
+                <div class="container">
+                    <img
+                    class="logo" src="/img/odtu.png" alt="">
+                    <div class="online-status"  style="font-size: 50px;">Socialify</div>
+                </div>
+            </nav>
+        </header>
+        <main class="video_chat_main_container">
+            <div class="video_chat_container"style="background-color: rgb(102, 155, 172);">
+                <div class="video-tag-container">
+                    <div class="videos">
+                        <video class="video-player" id="user-2" style="border-top: 3px solid #669BAC;;" autoplay="autoplay" playsinnline="playsinnline"></video>
+                        <video class="video-player" id="user-1" autoplay="autoplay" playsinnline="playsinnline"></video>
+                    </div>
+                </div>
+                <div class="chat-container" style="background-color: rgb(102, 155, 172);">
+                    <div class="chat-text-container">
+                        <p>You are now chatting with a random stranger</p>
+                        <hr class="horizontal-divider">
+                        <p class="chat-text-area"></p>
+                    </div>
+                        <div class="next-chat-container"> <div class="next-chat"style="background-color: #222222; color: #ffffff; padding: 10px; text-align: center; border-radius: 5px;">
+                            <div>Next</div>
+                        </div>
+                        <div class="type-message" style="text-align: center;">
+                            <textarea id="msg-input" style="width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 5px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);" cols="25" rows="5"></textarea>
+                        </div>                        
+
+                        <div class="msg-send-button" style="background-color: #222222; color: #ffffff; padding: 10px; text-align: center; border-radius: 5px;">
+                            <i class="material-icons " style="font-size:36px;">send</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </body>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+    <script src="/js/index.js"></script>
+
+</html>

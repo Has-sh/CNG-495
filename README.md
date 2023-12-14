@@ -1,2 +1,9 @@
-# CNG-495
-CNG 495 SOCIALIFY project
+# socilaify-startup
+#
+How To: 
+#
+Run the command 
+
+npm Install
+#
+npm start
