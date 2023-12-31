@@ -51,7 +51,6 @@ function runUser() {
 
   init();
 
-
   let createOffer = async (remoteU) => {
     createPeerConnection();
     let offer = await peerConnection.createOffer();
