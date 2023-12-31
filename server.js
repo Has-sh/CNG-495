@@ -45,6 +45,39 @@ io.on("connection", (socket) => {
       console.log(use);
     });
   });
+  socket.on("findUnengagedUser", (data) => {
+    const unengagedUser = userConnection.find(
+      (user) => !user.engaged && user.connectionId !== socket.id
+    );
+
+    if (unengagedUser) {
+      const senderUser = userConnection.find(
+        (user) => user.connectionId === socket.id
+      );
+      if (senderUser) {
+        senderUser.engaged = true;
+        console.log("UserUser is", senderUser);
+      }
+
+      unengagedUser.engaged = true;
+      socket.emit("startChat", unengagedUser.connectionId);
+      console.log("engaged user", unengagedUser.engaged);
+    }
   });
+  socket.on("findNextUnengagedUser", (data) => {
+    const availableUsers = userConnection.filter(
+      (user) =>
+        !user.engaged &&
+        user.connectionId !== socket.id &&
+        user.connectionId !== data.remoteUser
+    );
+        if (availableUsers.length > 0) {
+      const randomUser =
+        availableUsers[Math.floor(Math.random() * availableUsers.length)];
+      randomUser.engaged = true;
+      socket.emit("startChat", randomUser.connectionId);
+    }
+  });
+});
 
 
