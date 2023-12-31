@@ -72,8 +72,7 @@ io.on("connection", (socket) => {
         user.connectionId !== data.remoteUser
     );
         if (availableUsers.length > 0) {
-      const randomUser =
-        availableUsers[Math.floor(Math.random() * availableUsers.length)];
+      const randomUser = availableUsers[Math.floor(Math.random() * availableUsers.length)];
       randomUser.engaged = true;
       socket.emit("startChat", randomUser.connectionId);
     }
