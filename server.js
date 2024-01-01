@@ -74,18 +74,17 @@ io.on("connection", (socket) => {
     }
   });
 
-  // Handling event to find the next unengaged user to start a chat
-  socket.on("findNextUnengagedUser", (data) => {
-    const availableUsers = userConnection.filter(
-      (user) =>
-        !user.engaged &&
-        user.connectionId !== socket.id &&
-        user.connectionId !== data.remoteUser
+  // Event listener for receiving an offer sent to a remote user
+  socket.on("offerSentToRemote", (data) => {
+    // Finding the user who should receive the offer
+    var offerReceiver = userConnection.find(
+      (o) => o.user_id === data.remoteUser
     );
-    if (availableUsers.length > 0) {
-      const randomUser = availableUsers[Math.floor(Math.random() * availableUsers.length)];
-      randomUser.engaged = true;// Marking the randomly selected unengaged user as engaged
-      socket.emit("startChat", randomUser.connectionId); // Emitting event to start chat with the selected unengaged user
+    if (offerReceiver) {
+      // Logging the receiver's connection ID for reference
+      console.log("OfferReceiver user is: ", offerReceiver.connectionId);
+      // Emitting the offer to the intended receiver
+      socket.to(offerReceiver.connectionId).emit("ReceiveOffer", data);
     }
   });
 });
