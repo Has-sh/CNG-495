@@ -152,3 +152,64 @@ function runUser() {
     }
   }
 }
+function sendData() {
+  const msgData = msgInput.value;
+  chatTextArea.innerHTML +=
+    "<div style='margin-top:2px; margin-bottom:2px;'><b>Me: </b>" +
+    msgData +
+    "</div>";
+  if (sendChannel) {
+    onSendChannelStateChange();
+    sendChannel.send(msgData);
+    msgInput.value = "";
+  } else {
+    // Handle sending data on receive channel if needed
+    // receiveChannel.send(msgData);
+    msgInput.value = "";
+  }
+}
+
+function receiveChannelCallback(event) {
+  console.log("Receive Channel Callback");
+  receiveChannel = event.channel;
+  receiveChannel.onmessage = onReceiveChannelMessageCallback;
+  receiveChannel.onopen = onReceiveChannelStateChange;
+  receiveChannel.onclose = onReceiveChannelStateChange;
+}
+
+function onReceiveChannelMessageCallback(event) {
+  console.log("Received Message");
+  chatTextArea.innerHTML +=
+    "<div style='margin-top:2px; margin-bottom:2px;'><b>Stranger: </b>" +
+    event.data +
+    "</div>";
+}
+
+function onReceiveChannelStateChange() {
+  const readystate = receiveChannel.readystate;
+  console.log("Receive channel state is: " + readystate);
+  if (readystate === "open") {
+    console.log(
+      "Data channel ready state is open - onReceiveChannelStateChange"
+    );
+  } else {
+    console.log(
+      "Data channel ready state is NOT open - onReceiveChannelStateChange"
+    );
+  }
+}
+
+function onSendChannelStateChange() {
+  const readystate = sendChannel.readystate;
+  console.log("Send channel state is: " + readystate);
+  if (readystate === "open") {
+    console.log(
+      "Data channel ready state is open - onSendChannelStateChange"
+    );
+  } else {
+    console.log(
+      "Data channel ready state is NOT open - onSendChannelStateChange"
+    );
+  }
+}
+
