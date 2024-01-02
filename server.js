@@ -87,6 +87,35 @@ io.on("connection", (socket) => {
       socket.to(offerReceiver.connectionId).emit("ReceiveOffer", data);
     }
   });
+  
+  // Event for sending an answer to a user
+  socket.on("answerSentToUser1", (data) => {
+    var answerReceiver = userConnection.find(
+      (o) => o.user_id === data.receiver
+    );
+    if (answerReceiver) {
+      console.log("answerReceiver user is: ", answerReceiver.connectionId);
+      socket.to(answerReceiver.connectionId).emit("ReceiveAnswer", data);
+    }
+  });
+
+  // Event for sending ICE candidates to a remote user
+  socket.on("candidateSentToUser", (data) => {
+    var candidateReceiver = userConnection.find(
+      (o) => o.user_id === data.remoteUser
+    );
+    userConnection.map(function (user) {
+      const use = { "userid: ": user.user_id, Engaged: user.engaged };
+      console.log(use);
+    });
+    if (candidateReceiver) {
+      console.log(
+        "candidateReceiver user is: ",
+        candidateReceiver.connectionId
+      );
+      socket.to(candidateReceiver.connectionId).emit("candidateReceiver", data);
+    }
+  });
 });
 
 

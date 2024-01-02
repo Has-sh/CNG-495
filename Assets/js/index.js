@@ -151,4 +151,46 @@ function runUser() {
       );
     }
   }
+
+// Function to create an answer to the received offer
+  let createAnswer = async (data) => {
+    // Set the remote user for the answer
+    remoteUser = data.username;
+    createPeerConnection();
+    // Create a peer connection
+    await peerConnection.setRemoteDescription(data.offer);
+    // Create an answer to the offer
+    let answer = await peerConnection.createAnswer();
+    await peerConnection.setLocalDescription(answer);
+    // Send the answer to the remote user via the signaling server
+    socket.emit("answerSentToUser1", {
+      answer: answer,
+      sender: data.remoteUser,
+      receiver: data.username,
+    });
+    // Enable the 'next-chat' button for the user to proceed
+    document.querySelector(".next-chat").style.pointerEvents = "auto";
+  };
+
+  // Event listener for receiving an offer from the remote user
+  socket.on("ReceiveOffer", function (data) {
+    // Call the function to create an answer for the received offer
+    createAnswer(data);
+  });
+
+  // Function to add the received answer to the peer connection
+  let addAnswer = async (data) => {
+    // Check if there is no existing remote description
+    if (!peerConnection.currentRemoteDescription) {
+      // Set the received answer as the remote description
+      peerConnection.setRemoteDescription(data.answer);
+    }
+    // Enable the 'next-chat' button for the user to proceed
+    document.querySelector(".next-chat").style.pointerEvents = "auto";
+  };
+  // Event listener for receiving an answer from the remote user
+  socket.on("ReceiveAnswer", function (data) {
+    // Call the function to add the received answer to the peer connection
+    addAnswer(data);
+  });
 }
