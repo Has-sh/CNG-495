@@ -152,7 +152,7 @@ function runUser() {
     }
   }
 
-// Function to create an answer to the received offer
+  // Function to create an answer to the received offer
   let createAnswer = async (data) => {
     // Set the remote user for the answer
     remoteUser = data.username;
@@ -193,109 +193,108 @@ function runUser() {
     // Call the function to add the received answer to the peer connection
     addAnswer(data);
   });
-}
-function sendData() {
-  const msgData = msgInput.value;
-  chatTextArea.innerHTML +=
-    "<div style='margin-top:2px; margin-bottom:2px;'><b>Me: </b>" +
-    msgData +
-    "</div>";
-  if (sendChannel) {
-    onSendChannelStateChange();
-    sendChannel.send(msgData);
-    msgInput.value = "";
-  } else {
-    // Handle sending data on receive channel if needed
-    // receiveChannel.send(msgData);
-    msgInput.value = "";
+
+  function sendData() {
+    const msgData = msgInput.value;
+    chatTextArea.innerHTML +=
+      "<div style='margin-top:2px; margin-bottom:2px;'><b>Me: </b>" +
+      msgData +
+      "</div>";
+    if (sendChannel) {
+      onSendChannelStateChange();
+      sendChannel.send(msgData);
+      msgInput.value = "";
+    } else {
+      // Handle sending data on receive channel if needed
+      // receiveChannel.send(msgData);
+      msgInput.value = "";
+    }
   }
-}
 
-function receiveChannelCallback(event) {
-  console.log("Receive Channel Callback");
-  receiveChannel = event.channel;
-  receiveChannel.onmessage = onReceiveChannelMessageCallback;
-  receiveChannel.onopen = onReceiveChannelStateChange;
-  receiveChannel.onclose = onReceiveChannelStateChange;
-}
+  function receiveChannelCallback(event) {
+    console.log("Receive Channel Callback");
+    receiveChannel = event.channel;
+    receiveChannel.onmessage = onReceiveChannelMessageCallback;
+    receiveChannel.onopen = onReceiveChannelStateChange;
+    receiveChannel.onclose = onReceiveChannelStateChange;
+  }
 
+  function onReceiveChannelMessageCallback(event) {
+    console.log("Received Message");
+    chatTextArea.innerHTML +=
+      "<div style='margin-top:2px; margin-bottom:2px;'><b>Stranger: </b>" +
+      event.data +
+      "</div>";
+  }
 
-   socket.on("closedRemoteUser", function (data) {
-     const remotStream = peerConnection.getRemoteStreams()[0];
-     remotStream.getTracks().forEach((track) => track.stop());
-     peerConnection.close();
-     document.querySelector(".chat-text-area").innerHTML = "";
-     const remoteVid = document.getElementById("user-2");
-     if (remoteVid.srcObject) {
-       remoteVid.srcObject.getTracks().forEach((track) => track.stop());
-       remoteVid.srcObject = null;
-     }
-     console.log("Closed Remote user");
-     fetchNextUser(remoteUser);
-   });
+  function onReceiveChannelStateChange() {
+    const readystate = receiveChannel.readystate;
+    console.log("Receive channel state is: " + readystate);
+    if (readystate === "open") {
+      console.log(
+        "Data channel ready state is open - onReceiveChannelStateChange"
+      );
+    } else {
+      console.log(
+        "Data channel ready state is NOT open - onReceiveChannelStateChange"
+      );
+    }
+  }
 
-   socket.on("candidateReceiver", function (data) {
-     peerConnection.addIceCandidate(data.iceCandidateData);
-   });
-
-   msgSendBtn.addEventListener("click", function (event) {
-     sendData();
-   });
-
-   window.addEventListener("unload", function (event) {
-     socket.emit("remoteUserClosed", {
-       username: username,
-       remoteUser: remoteUser,
-     });
-   });
-
-   async function closeConnection() {
-     document.querySelector(".chat-text-area").innerHTML = "";
-     const remotStream = peerConnection.getRemoteStreams()[0];
-     remotStream.getTracks().forEach((track) => track.stop());
-
-     await peerConnection.close();
-     const remoteVid = document.getElementById("user-2");
-     if (remoteVid.srcObject) {
-       remoteVid.srcObject.getTracks().forEach((track) => track.stop());
-       remoteVid.srcObject = null;
-     }
-
-     await socket.emit("remoteUserClosed", {
-       username: username,
-       remoteUser: remoteUser,
-     });
-     fetchNextUser(remoteUser);
-   }
-
-   $(document).on("click", ".next-chat", function () {
-     document.querySelector(".chat-text-area").innerHTML = "";
-     console.log("From Next Chat button");
-     closeConnection();
+  socket.on("closedRemoteUser", function (data) {
+    const remotStream = peerConnection.getRemoteStreams()[0];
+    remotStream.getTracks().forEach((track) => track.stop());
+    peerConnection.close();
+    document.querySelector(".chat-text-area").innerHTML = "";
+    const remoteVid = document.getElementById("user-2");
+    if (remoteVid.srcObject) {
+      remoteVid.srcObject.getTracks().forEach((track) => track.stop());
+      remoteVid.srcObject = null;
+    }
+    console.log("Closed Remote user");
+    fetchNextUser(remoteUser);
   });
-=======
-function onReceiveChannelMessageCallback(event) {
-  console.log("Received Message");
-  chatTextArea.innerHTML +=
-    "<div style='margin-top:2px; margin-bottom:2px;'><b>Stranger: </b>" +
-    event.data +
-    "</div>";
-}
 
-function onReceiveChannelStateChange() {
-  const readystate = receiveChannel.readystate;
-  console.log("Receive channel state is: " + readystate);
-  if (readystate === "open") {
-    console.log(
-      "Data channel ready state is open - onReceiveChannelStateChange"
-    );
-  } else {
-    console.log(
-      "Data channel ready state is NOT open - onReceiveChannelStateChange"
-    );
+  socket.on("candidateReceiver", function (data) {
+    peerConnection.addIceCandidate(data.iceCandidateData);
+  });
+
+  msgSendBtn.addEventListener("click", function (event) {
+    sendData();
+  });
+
+  window.addEventListener("unload", function (event) {
+    socket.emit("remoteUserClosed", {
+      username: username,
+      remoteUser: remoteUser,
+    });
+  });
+
+  async function closeConnection() {
+    document.querySelector(".chat-text-area").innerHTML = "";
+    const remotStream = peerConnection.getRemoteStreams()[0];
+    remotStream.getTracks().forEach((track) => track.stop());
+
+    await peerConnection.close();
+    const remoteVid = document.getElementById("user-2");
+    if (remoteVid.srcObject) {
+      remoteVid.srcObject.getTracks().forEach((track) => track.stop());
+      remoteVid.srcObject = null;
+    }
+
+    await socket.emit("remoteUserClosed", {
+      username: username,
+      remoteUser: remoteUser,
+    });
+    fetchNextUser(remoteUser);
   }
-}
 
+  $(document).on("click", ".next-chat", function () {
+    document.querySelector(".chat-text-area").innerHTML = "";
+    console.log("From Next Chat button");
+    closeConnection();
+  });
+}
 
 
 
