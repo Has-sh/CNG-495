@@ -241,17 +241,5 @@ function onReceiveChannelStateChange() {
   }
 }
 
-function onSendChannelStateChange() {
-  const readystate = sendChannel.readystate;
-  console.log("Send channel state is: " + readystate);
-  if (readystate === "open") {
-    console.log(
-      "Data channel ready state is open - onSendChannelStateChange"
-    );
-  } else {
-    console.log(
-      "Data channel ready state is NOT open - onSendChannelStateChange"
-    );
-  }
-}
+
 
