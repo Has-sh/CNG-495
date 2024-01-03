@@ -219,6 +219,61 @@ function receiveChannelCallback(event) {
   receiveChannel.onclose = onReceiveChannelStateChange;
 }
 
+
+   socket.on("closedRemoteUser", function (data) {
+     const remotStream = peerConnection.getRemoteStreams()[0];
+     remotStream.getTracks().forEach((track) => track.stop());
+     peerConnection.close();
+     document.querySelector(".chat-text-area").innerHTML = "";
+     const remoteVid = document.getElementById("user-2");
+     if (remoteVid.srcObject) {
+       remoteVid.srcObject.getTracks().forEach((track) => track.stop());
+       remoteVid.srcObject = null;
+     }
+     console.log("Closed Remote user");
+     fetchNextUser(remoteUser);
+   });
+
+   socket.on("candidateReceiver", function (data) {
+     peerConnection.addIceCandidate(data.iceCandidateData);
+   });
+
+   msgSendBtn.addEventListener("click", function (event) {
+     sendData();
+   });
+
+   window.addEventListener("unload", function (event) {
+     socket.emit("remoteUserClosed", {
+       username: username,
+       remoteUser: remoteUser,
+     });
+   });
+
+   async function closeConnection() {
+     document.querySelector(".chat-text-area").innerHTML = "";
+     const remotStream = peerConnection.getRemoteStreams()[0];
+     remotStream.getTracks().forEach((track) => track.stop());
+
+     await peerConnection.close();
+     const remoteVid = document.getElementById("user-2");
+     if (remoteVid.srcObject) {
+       remoteVid.srcObject.getTracks().forEach((track) => track.stop());
+       remoteVid.srcObject = null;
+     }
+
+     await socket.emit("remoteUserClosed", {
+       username: username,
+       remoteUser: remoteUser,
+     });
+     fetchNextUser(remoteUser);
+   }
+
+   $(document).on("click", ".next-chat", function () {
+     document.querySelector(".chat-text-area").innerHTML = "";
+     console.log("From Next Chat button");
+     closeConnection();
+  });
+=======
 function onReceiveChannelMessageCallback(event) {
   console.log("Received Message");
   chatTextArea.innerHTML +=
@@ -240,6 +295,7 @@ function onReceiveChannelStateChange() {
     );
   }
 }
+
 
 
 
