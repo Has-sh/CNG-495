@@ -27,9 +27,6 @@ var server = app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
 
-
-
-
 const io = require("socket.io")(server, {
   allowEIO3: true,// Configuring Socket.IO with options
 });
@@ -90,7 +87,7 @@ io.on("connection", (socket) => {
       socket.to(offerReceiver.connectionId).emit("ReceiveOffer", data);
     }
   });
-  
+
   // Event for sending an answer to a user
   socket.on("answerSentToUser1", (data) => {
     var answerReceiver = userConnection.find(
@@ -119,9 +116,8 @@ io.on("connection", (socket) => {
       socket.to(candidateReceiver.connectionId).emit("candidateReceiver", data);
     }
   });
-});
-
-socket.on("findNextUnengagedUser", (data) => {
+  
+  socket.on("findNextUnengagedUser", (data) => {
     const availableUsers = userConnection.filter(
       (user) =>
         !user.engaged &&
@@ -157,3 +153,6 @@ socket.on("findNextUnengagedUser", (data) => {
       socket.to(closedUser.connectionId).emit("closedRemoteUser", data);
     }
   });
+});
+
+
