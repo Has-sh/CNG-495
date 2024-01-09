@@ -294,6 +294,19 @@ function runUser() {
     console.log("From Next Chat button");
     closeConnection();
   });
+
+function fetchNextUser(remoteUser) {
+    socket.emit("findNextUnengagedUser", {
+      username: username,
+      remoteUser: remoteUser,
+    });
+
+    socket.on("NextStartChat", (otherUserId) => {
+      console.log("Starting chat with user:", otherUserId);
+      remoteUser = otherUserId;
+      createOffer(otherUserId);
+    });
+  }
 }
 
 
