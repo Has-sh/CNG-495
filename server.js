@@ -27,6 +27,9 @@ var server = app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
 
+
+
+
 const io = require("socket.io")(server, {
   allowEIO3: true,// Configuring Socket.IO with options
 });
@@ -118,4 +121,39 @@ io.on("connection", (socket) => {
   });
 });
 
+socket.on("findNextUnengagedUser", (data) => {
+    const availableUsers = userConnection.filter(
+      (user) =>
+        !user.engaged &&
+        user.connectionId !== socket.id &&
+        user.connectionId !== data.remoteUser
+    );
 
+    if (availableUsers.length > 0) {
+      const randomUser =
+        availableUsers[Math.floor(Math.random() * availableUsers.length)];
+      randomUser.engaged = true;
+      socket.emit("startChat", randomUser.connectionId);
+    }
+  });
+  socket.on("disconnect", () => {
+    console.log("User disconnected");
+
+    userConnection = userConnection.filter((p) => p.connectionId !== socket.id);
+    io.of("/admin").emit("userinfo", userConnection);
+    console.log(
+      "Rest users username are: ",
+      userConnection.map(function (user) {
+        return { "userid: ": user.user_id, Engaged: user.engaged };
+      })
+    );
+  });
+
+  socket.on("remoteUserClosed", (data) => {
+    var closedUser = userConnection.find((o) => o.user_id === data.remoteUser);
+    if (closedUser) {
+      console.log("closedUser user is: ", closedUser.connectionId);
+      closedUser.engaged = false;
+      socket.to(closedUser.connectionId).emit("closedRemoteUser", data);
+    }
+  });
